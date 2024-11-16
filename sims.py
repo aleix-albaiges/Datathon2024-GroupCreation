@@ -8,8 +8,15 @@ participants = load_participants(data_path)
 
 objectives : dict[uuid.UUID,str] = {}
 
+objectives : dict[uuid.UUID,str] = {}
+objectives : dict[uuid.UUID,str] = {}
+objectives : dict[uuid.UUID,str] = {}
+
+
 for p in participants:
-    objectives[p.id] = p.objective
+    objectives[p.id] = p.objective + p.
+
+
     
 print(objectives[participants[8].id])
 
