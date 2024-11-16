@@ -5,7 +5,7 @@ import os
 
 
 
-data_path = "data/datathon_participants.json"
+data_path = "data/participants.json"
 participants = load_participants(data_path)
 
 objectives : dict[uuid.UUID,str] = {}
