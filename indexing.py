@@ -1,8 +1,9 @@
 import subprocess  # Import subprocess
 
+directories = ['Objectives_files', 'Technical_files']
+index_names = ['objective_ind', 'technical_ind']
 
-EXTRACT_DIR = 'arxiv'
-INDEX_NAME = 'exercise2'
+
 
 def index_documents(script_path, index_name, extract_dir):
     print("Indexing documents...")
@@ -12,11 +13,15 @@ def index_documents(script_path, index_name, extract_dir):
         '--index', index_name,
         '--path', extract_dir,
         '--token', 'letter',
-        '--filter', 'lowercase', 'asciifolding'
+        '--filter', 'lowercase', 'asciifolding', 'stop', 'porter_stem'
     ]
     # Execute the script with the specified arguments
     subprocess.run(command)
     print("Indexing completed.")
 
 script_path = 'IndexFilesPreprocess.py'  # Make sure this path is correct
-index_documents(script_path, INDEX_NAME, EXTRACT_DIR)
+
+for i in range(2):
+    EXTRACT_DIR = directories[i]
+    INDEX_NAME = index_names[i]
+    index_documents(script_path, INDEX_NAME, EXTRACT_DIR)
