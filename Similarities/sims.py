@@ -60,11 +60,10 @@ def load_participants(path: str) -> List[Participant]:
     return [Participant(**participant) for participant in json.load(open(path))]
 
 
-data_path = "/Users/cristinateixidocruilles/Desktop/Datathon24/Similarities/data/datathon_participants.json"
+path = input("Please enter the file or directory path where you have the data: ")
+data_path = path
 participants = load_participants(data_path)
-
 objectives : dict[uuid.UUID,str] = {}
-
 technical : dict[uuid.UUID,str] = {}
 
 
