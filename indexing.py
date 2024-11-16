@@ -1,6 +1,6 @@
 import subprocess 
 
-directories = ['objective', 'technical']
+directories = ['Objectives_files', 'Technical_files']
 index_names = ['objective_ind', 'technical_ind']
 
 def index_documents(script_path, index_name, extract_dir):
@@ -18,7 +18,7 @@ def index_documents(script_path, index_name, extract_dir):
 
 script_path = 'IndexFilesPreprocess.py' 
 
-for i in (2):
+for i in range(2):
     EXTRACT_DIR = directories[i]
     INDEX_NAME = index_names[i]
     index_documents(script_path, INDEX_NAME, EXTRACT_DIR)
