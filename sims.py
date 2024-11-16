@@ -3,8 +3,6 @@ from rich import print
 import uuid
 import os
 
-
-
 data_path = "data/datathon_participants.json"
 participants = load_participants(data_path)
 
@@ -39,7 +37,3 @@ for clau, valor in technical.items():
         fitxer.write(valor)
 
 print(f"Fitxers creats a la carpeta: {ruta_carpeta}")
-
-
-
-
