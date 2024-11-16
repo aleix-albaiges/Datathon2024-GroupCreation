@@ -16,7 +16,8 @@ def index_documents(script_path, index_name, extract_dir):
     subprocess.run(command)
     print("Indexing completed.")
 
-script_path = 'IndexFilesPreprocess.py' 
+path = input("Please enter the file or directory path where you have IndexFilesPreprocess.py:")
+script_path = path
 
 for i in range(2):
     EXTRACT_DIR = directories[i]

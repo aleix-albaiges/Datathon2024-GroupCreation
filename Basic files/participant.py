@@ -5,17 +5,12 @@ from dataclasses import dataclass
 from typing import Dict, List, Literal
 
 
+from dataclasses import dataclass
+from typing import Dict, List, Literal
+import uuid
+
 @dataclass
 class Participant:
-    def _init_(
-        self, id, name, email, age, year_of_study, shirt_size, university,
-        dietary_restrictions, programming_skills, experience_level, hackathons_done,
-        interests, preferred_role, objective, interest_in_challenges,
-        preferred_languages, friend_registration, preferred_team_size, availability,
-        introduction, technical_project, future_excitement, fun_fact
-    ):
-    
-    
     id: uuid.UUID  # Unique identifier
 
     # Personal data
@@ -49,6 +44,7 @@ class Participant:
     technical_project: str
     future_excitement: str
     fun_fact: str
+
 
 
 def load_participants(path: str) -> List[Participant]:

@@ -1,0 +1,9 @@
+    1. Execute elasticsearch
+
+Similarities folder
+    2. Run indexing.py --> we need the path were you have IndexFilesPreprocessing.py file
+    3. Run sims.py --> we need the path where you want to save the files (Similarities folder)
+    4. Run tf_idf.ipynb --> creates the dataset with the data obtained from texts
+
+Preprocessing folder
+    5. Run dfcreation.ipynb --> creates the final dataset
