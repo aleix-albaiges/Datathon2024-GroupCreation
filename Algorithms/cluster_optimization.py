@@ -408,12 +408,18 @@ def main(weights : dict[str,float] = {'university': 0.25,'interests': 0.75,'pref
     participants : dict[int,list[str]] = {i:[idp for idp, participant in participants_dict.items() if participant.preferred_team_size == i] for i in range(5)}
     best_groups : dict[int,list[list[str]]] = {i : [] for i in range(5)}
     best_losses = [0.0 for _ in range(5)]
-    for i in range(5):
-        if i < 2:
-            best_groups[i] = [[a] for a in participants[i]]
-        else:
-            best_groups[i], best_losses[i] = simulated_annealing(participants[i],i, matrix = matrix, id_nombre = id_nombre)
-
+    prov_groups : dict[int,list[list[str]]] = {i : [] for i in range(5)}
+    prov_losses = [0.0 for _ in range(5)]
+    for k in range(10):
+        for i in range(5):
+            if i < 2:
+                best_groups[i] = [[a] for a in participants[i]]
+            else:
+                prov_groups[i], prov_losses[i] = simulated_annealing(participants[i],i,matrix,id_nombre)
+                if prov_losses[i] < best_losses[i] or k==0:
+                    best_losses[i] = prov_losses[i]
+                    best_groups[i] = prov_groups[i] 
+        #print(best_losses)   
 
     #LOAD final groups json
     with open("best_groups.json", "w", encoding="utf-8") as json_file:
