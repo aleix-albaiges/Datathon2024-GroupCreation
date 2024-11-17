@@ -5,6 +5,7 @@ This project aims to improve the team formation process at Datathon FME by build
 Every year, Datathon FME attracts a diverse set of participants with different objectives — from winning the prize to building their portfolio, learning new skills, or connecting with fellow data enthusiasts. The goal of this project is to streamline the team formation process, making it easier and more efficient for participants to find like-minded teammates.
 Rather than relying on automated team assignment, our approach focuses on matching participants using a set of distance functions that evaluate the compatibility between participants. The system takes into account a wide range of personal attributes and goals, such as:
 
+
 Personal Data: Includes the participant's age, university, and dietary restrictions.
 
 Experience and Skills: This includes their programming skills (represented as a dictionary with skill levels for each language or tool), experience level, and the number of hackathons they've participated in.
