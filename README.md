@@ -20,5 +20,11 @@ Friendship and Team Preferences: Whether participants have friends they want to 
 
 By using these diverse attributes, the system can apply different distance functions to evaluate participants' compatibility in both technical and non-technical areas. These functions ensure that participants are grouped into balanced, complementary teams that align not only in terms of their skills but also in their goals, interests, and availability.
 
-# Requirements 
+# Prerequisites  
+This project is mainly build in Python, you can install it in the following link:
 Install [Python](https://www.python.org/downloads/) (3.10 or higher)
+Also, also various packages are used in our implementation that can be installed with the following command
+
+```bash
+pip install -r requirements.txt
+```
