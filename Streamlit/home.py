@@ -3,8 +3,11 @@ import streamlit as st
 import json
 import pandas as pd
 import plotly.express as px
+import time
 import plotly.graph_objects as go
 from pathlib import Path
+from text_similarities_indexing import main as main1
+from text_processing_final import main as main2
 
 # Page configuration must be the first Streamlit command
 st.set_page_config(
@@ -118,7 +121,7 @@ def organizer_view():
     st.markdown(
         """
         <h1 style="text-align: center; font-size: 60px; margin-bottom: 50px;"> 🎯 Hackathon Group Finder - Organizer View</h1>
-        """, 
+        """,
         unsafe_allow_html=True
     )
     
@@ -127,7 +130,7 @@ def organizer_view():
     
     with tab1:
         st.header("Upload Participant Data")
-        uploaded_file = st.file_uploader("Choose a CSV or Excel file", type=['csv', 'xlsx'])
+        uploaded_file = st.file_uploader("Choose a JSON file", type=['json'])
         
         if uploaded_file is not None:
             try:
@@ -140,11 +143,12 @@ def organizer_view():
                 with open(file_path, 'wb') as f:
                     f.write(uploaded_file.getvalue())
                 
-                # Read the file
-                if uploaded_file.name.endswith('.csv'):
-                    df = pd.read_csv(file_path)
-                else:
-                    df = pd.read_excel(file_path)
+                # Read the JSON file
+                with open(file_path, 'r') as f:
+                    data = json.load(f)
+                
+                # Convert JSON to DataFrame
+                df = pd.DataFrame(data)
                 
                 # Display data preview
                 st.subheader("Data Preview")
@@ -153,10 +157,8 @@ def organizer_view():
                 # Basic statistics
                 st.subheader("Dataset Statistics")
                 col1, col2 = st.columns(2)
-                
                 with col1:
                     st.metric("Total Participants", len(df))
-                    
                 with col2:
                     if 'skills' in df.columns:
                         unique_skills = df['skills'].str.split(',').explode().nunique()
@@ -165,45 +167,59 @@ def organizer_view():
                 # Save to session state
                 st.session_state['participant_data'] = df
                 
-                if st.button("Generate Groups"):
-                    with st.spinner("Generating optimal groups..."):
-                        # Add your group generation logic here
-                        st.success("Groups have been generated!")
-                        
+                # Create three separate buttons for each script
+                st.subheader("Generate Groups Process")
+                
+                # Button for Script 1
+                if st.button("1. Run Text Similarities Indexing"):
+                    with st.spinner("Running text_similarities_indexing..."):
+                        try:
+                            main1()
+                            st.success("Text similarities indexing completed!")
+                            # Set a flag in session state to track completion
+                            st.session_state['script1_complete'] = True
+                        except Exception as e:
+                            st.error(f"Error in text similarities indexing: {str(e)}")
+                
+                # Button for Script 2
+                if st.button("2. Run Text Processing"):
+                    if st.session_state.get('script1_complete', False):
+                        with st.spinner("Running text_processing_final..."):
+                            try:
+                                main2()
+                                st.success("Text processing completed!")
+                                # Set a flag in session state to track completion
+                                st.session_state['script2_complete'] = True
+                            except Exception as e:
+                                st.error(f"Error in text processing: {str(e)}")
+                    else:
+                        st.warning("Please complete Step 1 (Text Similarities Indexing) first.")
+                
+                # Button for Script 3
+                if st.button("3. Generate Final Groups"):
+                    if st.session_state.get('script2_complete', False):
+                        with st.spinner("Generating final groups..."):
+                            try:
+                                output_csv = process_script3(st.session_state['participant_data'])
+                                st.success("Final groups generated!")
+                                
+                                # Provide download link for Script 3 output
+                                st.markdown("### Download Generated Groups")
+                                st.download_button(
+                                    label="Download CSV",
+                                    data=output_csv.to_csv(index=False),
+                                    file_name="generated_groups.csv",
+                                    mime="text/csv",
+                                )
+                            except Exception as e:
+                                st.error(f"Error generating final groups: {str(e)}")
+                    else:
+                        st.warning("Please complete Steps 1 and 2 first.")
+                
             except Exception as e:
-                st.error(f"Error processing file: {str(e)}")
+                st.error(f"Error processing the uploaded file: {str(e)}")
+                return
     
-    with tab2:
-        st.header("View Generated Groups")
-        if 'participant_data' in st.session_state:
-            # Add group viewing logic here
-            st.info("Group viewing functionality will be displayed here")
-        else:
-            st.warning("Please upload participant data first")
-    
-    with tab3:
-        st.header("Group Settings")
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            min_group_size = st.number_input("Minimum Group Size", min_value=2, value=3)
-            max_group_size = st.number_input("Maximum Group Size", min_value=min_group_size, value=5)
-        
-        with col2:
-            balance_skills = st.checkbox("Balance skills across groups", value=True)
-            consider_preferences = st.checkbox("Consider participant preferences", value=True)
-        
-        if st.button("Save Settings"):
-            settings = {
-                "min_group_size": min_group_size,
-                "max_group_size": max_group_size,
-                "balance_skills": balance_skills,
-                "consider_preferences": consider_preferences
-            }
-            # Save settings to session state
-            st.session_state['group_settings'] = settings
-            st.success("Settings saved successfully!")
-
 
 def display_results_with_download(results, filename):
     """Display results and provide download options"""
@@ -236,6 +252,7 @@ def display_results_with_download(results, filename):
                 file_name=f"results_{filename}",
                 mime="text/csv"
             )
+
 
 def participant_view():
     st.markdown(
