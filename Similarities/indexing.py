@@ -1,6 +1,6 @@
 import subprocess 
 
-directories = ['Objectives_files', 'Technical_files']
+directories = ['/Users/cristinateixidocruilles/Desktop/Datathon24/Similarities/Objective_files', '/Users/cristinateixidocruilles/Desktop/Datathon24/Similarities/Technical_files']
 index_names = ['objective_ind', 'technical_ind']
 
 def index_documents(script_path, index_name, extract_dir):
@@ -16,7 +16,7 @@ def index_documents(script_path, index_name, extract_dir):
     subprocess.run(command)
     print("Indexing completed.")
 
-path = input("Please enter the file or directory path where you have IndexFilesPreprocess.py:")
+path = input("Please enter the file or directory path where you have IndexFilesPreprocess.py: ")
 script_path = path
 
 for i in range(2):
