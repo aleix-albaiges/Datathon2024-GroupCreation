@@ -159,12 +159,6 @@ def participant_view():
             st.session_state.page = 'role_selection'
             st.rerun()
     
-    if not st.session_state.get('optimal_groups.json'):
-        st.error("No groups data available. Please contact the organizers.")
-        return
-    
-    #data = st.session_state['optimal_groups.json']
-    # Participant search
     st.header("Find Your Group")
     name_search = st.text_input("Enter your name")
     if name_search:
