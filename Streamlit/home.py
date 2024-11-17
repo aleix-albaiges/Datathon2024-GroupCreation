@@ -46,12 +46,12 @@ if 'current_page' not in st.session_state:
 def initialize_session_state():
     if 'page' not in st.session_state:
         st.session_state.page = 'role_selection'
-    if 'groups_data.json' not in st.session_state:
-        if Path('groups_data.json').exists():
-            with open('groups_data.json', 'r') as f:
-                st.session_state['groups_data.json'] = json.load(f)
+    if 'optimal_groups.json' not in st.session_state:
+        if Path('optimal_groups.json').exists():
+            with open('optimal_groups.json', 'r') as f:
+                st.session_state['optimal_groups.json'] = json.load(f)
         else:
-            st.session_state['groups_data.json'] = None
+            st.session_state['optimal_groups.json'] = None
 
 def save_data(data):
     """Save data to file and session state"""
@@ -65,7 +65,7 @@ def save_data(data):
         json.dump(data, f)
     
     # Update session state
-    st.session_state['groups_data.json'] = data
+    st.session_state['optimal_groups.json'] = data
 
 def role_selection():
     st.markdown(
@@ -112,18 +112,19 @@ def participant_view():
             st.session_state.page = 'role_selection'
             st.rerun()
     
-    if not st.session_state.get('groups_data.json'):
+    if not st.session_state.get('optimal_groups.json'):
         st.error("No groups data available. Please contact the organizers.")
         return
     
-    data = st.session_state['groups_data.json']
-    
+    data = st.session_state['optimal_groups.json']
+    print(data)
     # Participant search
     st.header("Find Your Group")
-    name_search = st.text_input("Enter your name").strip().lower()
+    name_search = st.text_input("Enter your name")
     
     if name_search:
         found = False
+        id = name_to_id[name]
         for idx, group in enumerate(data['groups']):
             for member in group['members']:
                 if member['name'].lower() == name_search:
@@ -186,8 +187,8 @@ def organizer_view():
             st.rerun()
     
     # File upload section
-    st.header("Upload Groups Data")
-    uploaded_file = st.file_uploader("Upload your JSON file with groups data", type=['json'])
+    st.header("Upload Participants Data")
+    uploaded_file = st.file_uploader("Upload your JSON file with participants data", type=['json'])
     
     if uploaded_file is not None:
         try:
@@ -198,8 +199,8 @@ def organizer_view():
             st.error(f"Error loading file: {str(e)}")
     
     # Display current groups
-    if st.session_state.get('groups_data.json'):
-        data = st.session_state['groups_data.json']
+    if st.session_state.get('optimal_groups.json'):
+        data = st.session_state['optimal_groups.json']
         st.header("Current Groups")
         
         # Add search/filter options
@@ -294,7 +295,7 @@ def organizer_view():
             
             st.plotly_chart(fig, use_container_width=True)
     else:
-        st.info("No data uploaded yet. Please upload a JSON file with groups data.")
+        st.info("No data uploaded yet. Please upload a JSON file with participants data.")
 
 def main():
     # Initialize session state
