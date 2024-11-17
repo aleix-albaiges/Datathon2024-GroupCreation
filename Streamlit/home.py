@@ -52,11 +52,13 @@ for p in participants_sencer:
     id_preference[p.name] = p.preferred_team_size
 
 best_groups_set : dict[int,list[set[str]]] = {}
-best_groups = load_pickle("data/best_groups.pickle")
+file_path = os.path.join(os.getcwd(), "data", "best_groups.pickle")
+best_groups = load_pickle(file_path)
 for n, group_size in best_groups.items():
     best_groups_set[n] = []
     for groups in group_size:
         best_groups_set[n].append(set(groups))
+
 
 # Page configuration must be the first Streamlit command
 st.set_page_config(
@@ -159,28 +161,27 @@ def participant_view():
             st.session_state.page = 'role_selection'
             st.rerun()
     
-    #data = st.session_state['optimal_groups.json']
-    # Participant search
     st.header("Find Your Group")
     name_search = st.text_input("Enter your name")
     if name_search:
-        preference = id_preference[name_search]
-        found = False
-        for group in best_groups_set[preference]:
-            if nom_id[name_search] in group:
-                        found = True                   
-                        # Display group info
-                        st.subheader("Your Group Members")
-                        # Create columns for each member
-                        cols = st.columns(len(group))
-                        for col, teammate in zip(cols, group):
+        try:
+            preference = id_preference[name_search]
+            found = False
+            for group in best_groups_set[preference]:
+                if nom_id[name_search] in group:
+                            found = True                   
+                            # Display group info
+                            st.subheader("Your Group Members")
+                            # Create columns for each member
+                            cols = st.columns(len(group))
+                            for col, teammate in zip(cols, group):
 
-                            with col:
-                                st.markdown(f"### {id_nom[teammate]}")
-                                st.write(f"📧 {id_email[teammate]}")
-                            
-        if not found:
-            st.warning("Name not found. Please check your spelling or contact the organizers.")
+                                with col:
+                                    st.markdown(f"### {id_nom[teammate]}")
+                                    st.write(f"📧 {id_email[teammate]}")
+        except:                   
+            if not found:
+                st.warning("Name not found. Please check your spelling or contact the organizers.")
 
 def main():
     # Initialize session state
@@ -192,6 +193,7 @@ def main():
         role_selection()
     elif st.session_state.page == 'organizer':
         org.organizer_view()
+
     elif st.session_state.page == 'participant':
         participant_view()
 
