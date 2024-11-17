@@ -8,6 +8,7 @@ import plotly.graph_objects as go
 from pathlib import Path
 from text_similarities_indexing import main as main1
 from text_processing_final import main as main2
+from cluster_optimization import main as main3
 
 def organizer_view():
     st.markdown(
@@ -61,6 +62,7 @@ def organizer_view():
             st.error(f"Error processing the uploaded file: {str(e)}")
             return
 
+
         # Button to generate groups
         if st.button("Generate Groups"):
             with st.spinner("Generating optimal groups..."):
@@ -73,14 +75,20 @@ def organizer_view():
                         main1()  # Waits for main1() to finish
                         progress_bar.progress(33)
                         st.success("text_similarities_indexing completed!")
-                        time.sleep(2)
+                        time.sleep(1)
 
                         # Run Script 2
                         st.info("Running text_processing_final...")
                         main2()  # Waits for main2() to finish
                         progress_bar.progress(66)
                         st.success("text_processing_final completed!")
-                        time.sleep(2)
+                        time.sleep(1)
+
+                        st.info("Running cluster_optimization...")
+                        main3()
+                        progress_bar.progress(100)
+                        st.success("cluster_optimization completed!")
+                        time.sleep(1)
 
                         # Provide download button for processed data
                         processed_file_path = "/data/df_text_processed.csv"

@@ -63,3 +63,8 @@ def preprocessing(path_json_participants: str = 'data/datathon_participants.json
 
 
 
+def main() -> None:
+    preprocessing()
+
+if __name__ == '__main__':
+    main()
