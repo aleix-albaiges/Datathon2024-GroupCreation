@@ -1,4 +1,3 @@
-from participant import load_participants
 from rich import print
 import pandas as pd
 import numpy as np
@@ -61,5 +60,9 @@ def preprocessing(path_json_participants: str = 'data/datathon_participants.json
     df_merged.to_csv(path_final_preprocessed_df, index=False)
     print('Merged and Loaded :)')
 
+def main() -> None:
+    preprocessing()
 
+if __name__ == '__main__':
+    main()
 
