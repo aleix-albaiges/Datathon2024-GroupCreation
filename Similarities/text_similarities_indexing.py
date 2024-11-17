@@ -130,10 +130,9 @@ def indexing(path_to_file_IndexfilesPreprocess: str) -> None:
 
 def main() -> None:
     sims()
-    indexing('D:\Github\Datathon2024-GroupCreation\Similarities\IndexFilesPreprocess.py')
+    indexing('/Users/cristinateixidocruilles/Desktop/Datathon24/Similarities/IndexFilesPreprocess.py')
 
    
-
 if __name__ == '__main__':
     main()
 
