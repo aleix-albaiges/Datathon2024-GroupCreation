@@ -70,7 +70,7 @@ def save_data(data):
 def role_selection():
     st.markdown(
         """
-        <h1 style="text-align: center; font-size: 60px; margin-bottom: 50px;"> Group Generator</h1>
+        <h1 style="text-align: center; font-size: 80px; margin-bottom: 60px;"> Group Generator</h1>
         """, 
         unsafe_allow_html=True
     )
