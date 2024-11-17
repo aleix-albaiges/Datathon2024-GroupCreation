@@ -2,6 +2,7 @@
 import streamlit as st
 import json
 import pandas as pd
+import os
 import plotly.express as px
 import time
 import plotly.graph_objects as go
@@ -124,101 +125,96 @@ def organizer_view():
         """,
         unsafe_allow_html=True
     )
-    
+
     # Create tabs for different organizer functions
     tab1, tab2, tab3 = st.tabs(["Upload Data", "View Groups", "Settings"])
-    
+
     with tab1:
         st.header("Upload Participant Data")
         uploaded_file = st.file_uploader("Choose a JSON file", type=['json'])
-        
+
         if uploaded_file is not None:
             try:
                 # Create data directory if it doesn't exist
                 data_dir = Path('data')
                 data_dir.mkdir(exist_ok=True)
-                
+
                 # Save uploaded file
                 file_path = data_dir / uploaded_file.name
                 with open(file_path, 'wb') as f:
                     f.write(uploaded_file.getvalue())
-                
+
                 # Read the JSON file
                 with open(file_path, 'r') as f:
                     data = json.load(f)
-                
+
                 # Convert JSON to DataFrame
                 df = pd.DataFrame(data)
-                
+
                 # Display data preview
                 st.subheader("Data Preview")
                 st.dataframe(df.head())
-                
+
                 # Basic statistics
                 st.subheader("Dataset Statistics")
                 col1, col2 = st.columns(2)
+
                 with col1:
                     st.metric("Total Participants", len(df))
+
                 with col2:
                     if 'skills' in df.columns:
                         unique_skills = df['skills'].str.split(',').explode().nunique()
                         st.metric("Unique Skills", unique_skills)
-                
+
                 # Save to session state
                 st.session_state['participant_data'] = df
-                
-                # Create three separate buttons for each script
-                st.subheader("Generate Groups Process")
-                
-                # Button for Script 1
-                if st.button("1. Run Text Similarities Indexing"):
-                    with st.spinner("Running text_similarities_indexing..."):
-                        try:
-                            main1()
-                            st.success("Text similarities indexing completed!")
-                            # Set a flag in session state to track completion
-                            st.session_state['script1_complete'] = True
-                        except Exception as e:
-                            st.error(f"Error in text similarities indexing: {str(e)}")
-                
-                # Button for Script 2
-                if st.button("2. Run Text Processing"):
-                    if st.session_state.get('script1_complete', False):
-                        with st.spinner("Running text_processing_final..."):
-                            try:
-                                main2()
-                                st.success("Text processing completed!")
-                                # Set a flag in session state to track completion
-                                st.session_state['script2_complete'] = True
-                            except Exception as e:
-                                st.error(f"Error in text processing: {str(e)}")
-                    else:
-                        st.warning("Please complete Step 1 (Text Similarities Indexing) first.")
-                
-                # Button for Script 3
-                if st.button("3. Generate Final Groups"):
-                    if st.session_state.get('script2_complete', False):
-                        with st.spinner("Generating final groups..."):
-                            try:
-                                output_csv = process_script3(st.session_state['participant_data'])
-                                st.success("Final groups generated!")
-                                
-                                # Provide download link for Script 3 output
-                                st.markdown("### Download Generated Groups")
-                                st.download_button(
-                                    label="Download CSV",
-                                    data=output_csv.to_csv(index=False),
-                                    file_name="generated_groups.csv",
-                                    mime="text/csv",
-                                )
-                            except Exception as e:
-                                st.error(f"Error generating final groups: {str(e)}")
-                    else:
-                        st.warning("Please complete Steps 1 and 2 first.")
-                
+
             except Exception as e:
                 st.error(f"Error processing the uploaded file: {str(e)}")
                 return
+
+            # Button to generate groups
+            if st.button("Generate Groups"):
+                with st.spinner("Generating optimal groups..."):
+                    progress_bar = st.progress(0)
+
+                    if 'participant_data' in st.session_state:
+                        try:
+                            # Run Script 1
+                            st.info("Running text_similarities_indexing...")
+                            main1()  # Waits for main1() to finish
+                            progress_bar.progress(33)
+                            st.success("text_similarities_indexing completed!")
+                            time.sleep(2)  # Wait for 2 seconds before moving to the next script
+
+                            # Run Script 2
+                            st.info("Running text_processing_final...")
+                            main2()  # Waits for main2() to finish
+                            progress_bar.progress(66)
+                            st.success("text_processing_final completed!")
+                            time.sleep(2)  # Wait for 2 seconds before moving to the next script
+
+                            """# Run Script 3
+                            st.info("Generating final groups (Script 3)...")
+                            output_csv = process_script3(st.session_state['participant_data'])  # Waits for process_script3() to finish
+                            progress_bar.progress(100)
+                            st.success("Final groups generated!")
+                            time.sleep(2)  # Wait for 2 seconds before providing download link"""
+
+                            # Provide download link for Script 3 output
+                            if st.button("Download Generated File"):
+                                if os.path.exists("/Users/cristinateixidocruilles/Desktop/Datathon24/Streamlit/data/df_text_processed.csv"):
+                                    st.download_button(
+                                        label="Download example_file.csv",
+                                        data=open("/Users/cristinateixidocruilles/Desktop/Datathon24/Streamlit/data/df_text_processed.csv", "rb").read(),
+                                        file_name="example_file.csv",
+                                        mime="text/csv",
+                                    )
+                                else:
+                                    st.warning("No file available to download. Please generate it first.")
+                        except Exception as e:
+                            st.error(f"Error during group generation: {str(e)}")
     
 
 def display_results_with_download(results, filename):
