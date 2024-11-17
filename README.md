@@ -28,6 +28,9 @@ Then we have created distance functions for all the variables that we are taking
 
 Finally, we have created a streamlit visualization that does all the proceeding. If you are an organizer you can upload the json file with the participants and the program does the groups. IF you are a participant that has registered in the file then you can search for which is your group.
 
+To run the project from this github repository, it is enough to run the files in the [Scripts_def](Scripts_def/) folder in this order 1. text_indexing.py, 2. text_processing_final.py, 3. Preprocessing.py and 4. cluster.optimization.py. The folder [Streamlit](Streamli/) contains the codes to run the streamlit application. The command to run it is just streamlit run home.py. The rest of folders contain jupyter notebooks which do the same as the files in the folder [Scripts_def](Scripts_def/), explained in detail and step-by-step. This notebooks are what we have used to program this project.
+
+
 # Prerequisites  
 This project is mainly build in Python, you can install it in the following link:
 
