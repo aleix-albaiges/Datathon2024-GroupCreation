@@ -5,15 +5,38 @@ import plotly.express as px
 import plotly.graph_objects as go
 from pathlib import Path
 
+class Participant:
+    def __init__(self, id, university, interests, preferred_role, friend_registration, preferred_team_size, availability,
+                 programming_skills, interest_in_challenges, experience, languages_ordered, maturity, Tryhard, Rookie, Learner, Portfolio):
+        self.id = id
+        self.university = university
+        self.interests = interests
+        self.preferred_role = preferred_role
+        self.friend_registration = friend_registration
+        self.preferred_team_size = preferred_team_size
+        self.availability = availability
+        self.programming_skills = programming_skills
+        self.interest_in_challenges = interest_in_challenges
+        self.experience = experience
+        self.languages_ordered = languages_ordered
+        self.maturity = maturity
+        self.Tryhard = Tryhard
+        self.Rookie = Rookie
+        self.Learner = Learner
+        self.Portfolio = Portfolio
+
+
+
 def initialize_session_state():
     if 'page' not in st.session_state:
         st.session_state.page = 'role_selection'
-    if 'groups_data.json' not in st.session_state:
-        if Path('groups_data.json').exists():
-            with open('groups_data.json', 'r') as f:
-                st.session_state['groups_data.json'] = json.load(f)
-        else:
-            st.session_state['groups_data.json'] = None
+    if 'groups_data' not in st.session_state:
+        # Aquí pots inicialitzar amb un llistat de llistes d'identificadors
+        st.session_state['groups_data'] = [
+            ['id_participant1', 'id_participant2'],  # Grup 1
+            ['id_participant3', 'id_participant4'],  # Grup 2
+            # Afegeix més grups si cal
+        ]
 
 def save_data(data):
     """Save data to file and session state"""
@@ -42,125 +65,33 @@ def role_selection():
             if st.button("🎯 I'm an Organizer", use_container_width=True):
                 st.session_state.page = 'organizer'
                 st.rerun()
-
+def get_participant_data(id: str) -> Participant:
+    pass
 def organizer_view():
     st.title("🎯 Hackathon Group Management - Organizer View")
-    
-    # Add back button
+
     if st.button("← Back to Role Selection"):
         st.session_state.page = 'role_selection'
         st.rerun()
-    
-    # File upload section
-    st.header("Upload Groups Data")
-    uploaded_file = st.file_uploader("Upload your JSON file with groups data", type=['json'])
-    
-    if uploaded_file is not None:
-        try:
-            data = json.load(uploaded_file)
-            save_data(data)
-            st.success("Data successfully uploaded!")
-        except Exception as e:
-            st.error(f"Error loading file: {str(e)}")
-    
-    # Display current groups
-    if st.session_state.get('groups_data.json'):
-        data = st.session_state['groups_data.json']
+
+    # Mostra els grups actuals a partir dels identificadors
+    if st.session_state.get('groups_data'):
+        groups = st.session_state['groups_data']
         st.header("Current Groups")
-        
-        # Add search/filter options
-        search_option = st.selectbox(
-            "Select view option",
-            ["All Groups", "Search by Skill", "Group Statistics"]
-        )
-        
-        if search_option == "All Groups":
-            cols = st.columns(3)
-            for idx, group in enumerate(data['groups']):
-                with cols[idx % 3]:
-                    with st.expander(f"Group {idx + 1}"):
-                        st.write("Members:")
-                        for member in group['members']:
-                            st.write(f"""
-                            - **{member['name']}**
-                                - Email: {member['contact']}
-                                - Programming: {member['skills']['programming']}/5
-                                - Design: {member['skills']['design']}/5
-                                - Teamwork: {member['skills']['teamwork']}/5
-                            """)
-                        
-                        # Calculate and display group averages
-                        prog_avg = sum(m['skills']['programming'] for m in group['members']) / len(group['members'])
-                        design_avg = sum(m['skills']['design'] for m in group['members']) / len(group['members'])
-                        team_avg = sum(m['skills']['teamwork'] for m in group['members']) / len(group['members'])
-                        
-                        # Create radar chart for group skills
-                        fig = go.Figure()
-                        fig.add_trace(go.Scatterpolar(
-                            r=[prog_avg, design_avg, team_avg],
-                            theta=['Programming', 'Design', 'Teamwork'],
-                            fill='toself',
-                            name='Group Average'
-                        ))
-                        fig.update_layout(
-                            polar=dict(radialaxis=dict(visible=True, range=[0, 5])),
-                            showlegend=False,
-                            height=300
-                        )
-                        st.plotly_chart(fig, use_container_width=True)
-        
-        elif search_option == "Search by Skill":
-            skill = st.selectbox("Select skill to analyze", ["programming", "design", "teamwork"])
-            threshold = st.slider("Minimum skill level", 1, 5, 3)
-            
-            matching_groups = []
-            for idx, group in enumerate(data['groups']):
-                avg_skill = sum(m['skills'][skill] for m in group['members']) / len(group['members'])
-                if avg_skill >= threshold:
-                    matching_groups.append((idx, group, avg_skill))
-            
-            if matching_groups:
-                st.write(f"Found {len(matching_groups)} groups with average {skill} skill ≥ {threshold}")
-                for idx, group, avg_skill in matching_groups:
-                    with st.expander(f"Group {idx + 1} (Avg {skill}: {avg_skill:.1f})"):
-                        for member in group['members']:
-                            st.write(f"- {member['name']} ({skill}: {member['skills'][skill]}/5)")
-            else:
-                st.warning("No groups found matching the criteria")
-        
-        else:  # Group Statistics
-            st.subheader("Group Statistics")
-            
-            # Prepare data for visualization
-            all_skills = {
-                'programming': [],
-                'design': [],
-                'teamwork': []
-            }
-            
-            for group in data['groups']:
-                for skill in all_skills.keys():
-                    avg = sum(m['skills'][skill] for m in group['members']) / len(group['members'])
-                    all_skills[skill].append(avg)
-            
-            # Create box plots
-            fig = go.Figure()
-            for skill, values in all_skills.items():
-                fig.add_trace(go.Box(
-                    y=values,
-                    name=skill.capitalize(),
-                    boxpoints='all'
-                ))
-            
-            fig.update_layout(
-                title="Distribution of Skills Across Groups",
-                yaxis_title="Skill Level",
-                showlegend=False
-            )
-            
-            st.plotly_chart(fig, use_container_width=True)
+
+        for idx, group in enumerate(groups):
+            st.write(f"### Group {idx + 1}")
+            st.write("**Members:**")
+            for member_id in group:
+                member = get_participant_data(member_id)
+                if member:
+                    st.write(f"- **{member.university}**, Role: {member.preferred_role}")
+                    st.write(f"  - Programming Skills: {member.programming_skills}")
+                    st.write(f"  - Experience: {member.experience:.2f}")
+                else:
+                    st.warning(f"Participant with ID {member_id} not found.")
     else:
-        st.info("No data uploaded yet. Please upload a JSON file with groups data.")
+        st.info("No groups data available.")
 
 def participant_view():
     st.title("🎯 Hackathon Group Finder - Participant View")
