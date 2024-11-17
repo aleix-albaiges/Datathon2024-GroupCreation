@@ -19,3 +19,6 @@ Availability: The days and times the participant is available for team collabora
 Friendship and Team Preferences: Whether participants have friends they want to register with and their preferred team size.
 
 By using these diverse attributes, the system can apply different distance functions to evaluate participants' compatibility in both technical and non-technical areas. These functions ensure that participants are grouped into balanced, complementary teams that align not only in terms of their skills but also in their goals, interests, and availability.
+
+# Requirements 
+Install [Python](https://www.python.org/downloads/) (3.10 or higher)
