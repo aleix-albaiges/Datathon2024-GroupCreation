@@ -58,17 +58,24 @@ class Participant2:
     Experience : float = 0
 
 
-
-
 def norm(d: list[tuple[str, float]]) -> float:
+    '''
+    Computes de Norm of the frequencies vector
+    '''
     return np.sqrt(sum([freq*freq for _, freq in d]))
 
 
 def normalize(d1: list[tuple[str, float]]):
+    '''
+    Normalize the frequencies vector
+    '''
     normm = norm(d1)
     return [(k, v/normm) for k, v in d1]
 
 def stemmer(query: str) -> str:
+    '''
+    Stem queries 
+    '''
     res = ind.analyze(body={'analyzer':'default', 'text': query})
     query_stemmed = ''
     first = True
@@ -82,6 +89,9 @@ def stemmer(query: str) -> str:
 
 
 def tf_idf():
+    '''
+    Compute the tfidf weights of documents terms and then compute the similarities between queries and documents.
+    '''
     client = Elasticsearch("http://localhost:9200", request_timeout=1000)
     index_names = ['technical_ind', 'objective_ind']
     corpuses = {'technical_ind':{}, 'objective_ind':{}}
@@ -168,7 +178,11 @@ def tf_idf():
     sims = [sims_ob, sims_technical]
     return sims
 
+
 def load_participants_2(path: str, sims_ob: dict[uuid.UUID, list[float]], sims_technical: dict[uuid.UUID, list[float]]) -> list[Participant2]:
+    '''
+    Reload a list of new classes with the new variables and without the useless variables 
+    '''
     if not pathlib.Path(path).exists():
         raise FileNotFoundError(
             f"The file {path} does not exist, are you sure you're using the correct path?"

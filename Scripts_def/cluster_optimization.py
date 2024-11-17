@@ -43,6 +43,9 @@ class Participant_scores:
 
 
 def dist_university(university_1:str, university_2:str) :
+    '''
+    Compute participants distance for atribute 'University'.
+    '''
     if university_1 == university_2:
         return 0 
     else:
@@ -50,6 +53,9 @@ def dist_university(university_1:str, university_2:str) :
     
 
 def dist_friends(friend_registration_1:list[str], friend_registration_2:list[str], id_1:str, id_2:str):
+    '''
+    Compute participants distance for atribute 'friends'.
+    '''
     if id_1 in friend_registration_2 and id_2 in friend_registration_1:
         return 0
     elif id_1 in friend_registration_2 or id_2 in friend_registration_1:
@@ -58,10 +64,16 @@ def dist_friends(friend_registration_1:list[str], friend_registration_2:list[str
 
 
 def dist_one_hot_encoding(x, y) -> float:
+    '''
+    Compute participants distances for atributes with one hot encodings.
+    '''
     return sum([1 if x_i != y_i else 0 for x_i, y_i in zip(x, y)])
 
 
 def dist_programming_skills(skills_1:dict[str,int], skills_2:dict[str,int]) -> float:
+    '''
+    Compute participants distance for atribute 'Programming Skills'.
+    '''
     avg_level_1 = sum(skills_1.values()) / len(skills_1) if skills_1 else 0
     
     avg_level_2 = sum(skills_2.values()) / len(skills_2) if skills_2 else 0
@@ -75,6 +87,9 @@ def dist_programming_skills(skills_1:dict[str,int], skills_2:dict[str,int]) -> f
 
 
 def dist_preferred_role(role_1:str, role_2:str):
+    '''
+    Compute participants distance for atribute 'Preferred Role'.
+    '''
     if role_1 == role_2:
         return 1.0  
 
@@ -87,6 +102,9 @@ def dist_preferred_role(role_1:str, role_2:str):
     return 0.0
 
 def dist_language(languages_1:list[str], languages_2:list[str]):
+    '''
+    Compute participants distance for atribute 'Preferred lenguages'
+    '''
     if not languages_1 or not languages_2:  
         return 0
     
@@ -103,6 +121,9 @@ def dist_language(languages_1:list[str], languages_2:list[str]):
             
 
 def get_min_max_values(participants_dict : dict[str,Participant_scores], weights:dict[str,float]):
+    '''
+    Compute the minimum and maximum values of partial distances for the dataset
+    '''
     # Minimum and maximum values for each score
     min_values = {
         'university': float('inf'),
@@ -192,6 +213,10 @@ def get_min_max_values(participants_dict : dict[str,Participant_scores], weights
 
 
 def combined_distance(participant1: Participant_scores, participant2: Participant_scores, weights: dict[str, float], min_values: dict[str,float], max_values: dict[str,float]) -> float:
+    '''
+    Compute the partial distances for each atribute. Nomralize them. Multipy them by weights ponderations (hparams). Sum all the ponderated partial distances to get final participants distance.
+    '''
+    
     # Calcular les distàncies per atribut
     d_university = dist_university(participant1.university, participant2.university)
     d_interests = dist_one_hot_encoding(participant1.interests, participant2.interests)
@@ -249,6 +274,9 @@ def combined_distance(participant1: Participant_scores, participant2: Participan
 
 
 def calculate_distance_matrix(participants_dict : dict[str,Participant_scores], weights:dict[str,float], min_values:dict[str, float], max_values:dict[str, float], id_nombre: dict[str,int]) -> tuple[list[list[float]],list[str]]:
+    '''
+    Compute the distances matrix by computing all participants pairs distances
+    '''
     # Llista de tots els participants
     participant_ids = list(participants_dict.keys())
     num_participants = len(participant_ids)
@@ -278,12 +306,15 @@ def calculate_distance_matrix(participants_dict : dict[str,Participant_scores], 
 #ALGORITHM: SIMULATED ANNEALING
 
 def loss_function(grup: list[str], matrix: list[list[float]], id_nombre: dict[str,int]) -> float:
-    """
+    '''
     Loss function is the sum of the distances within all the elements of a group for all the groups. All distances are positives.
-    """
+    '''
     return sum(matrix[id_nombre[x]][id_nombre[y]] for x,y in combinations(grup,2))
 
 def generar_grups_aleatoris(participants:list[str],group_size:int) -> list[list[str]]:
+    '''
+    Inicialization on random clusters
+    '''
     random.shuffle(participants)
     grups : list[list[str]] = []
     for i in range(0, len(participants), group_size):
@@ -291,10 +322,15 @@ def generar_grups_aleatoris(participants:list[str],group_size:int) -> list[list[
     return grups
 
 def calculate_loss(grups: list[list[str]], matrix: list[list[float]], id_nombre: dict[str,int]) -> float:
-    
+    '''
+    Returns Loss function value for a given iteration
+    '''
     return sum(loss_function(grup, matrix, id_nombre) for grup in grups)
 
 def muta_grups_aleatoriament(grups: list[list[str]]):
+    '''
+    Forward iteration.
+    '''
     # Exemples de mútacions:
     grups_canvi = random.sample(grups, len(grups)//2)
     participants_canvi :list[str] = []
@@ -421,7 +457,7 @@ def main(weights : dict[str,float] = {'university': 0.25,'interests': 0.75,'pref
         #print(best_losses)   
 
     #LOAD final groups json
-    with open("best_groups.json", "w", encoding="utf-8") as json_file:
+    with open("data/best_groups.json", "w", encoding="utf-8") as json_file:
         json.dump(best_groups, json_file, ensure_ascii=False, indent=4)
 
     data_path = "data/datathon_participants.json"
@@ -438,8 +474,8 @@ def main(weights : dict[str,float] = {'university': 0.25,'interests': 0.75,'pref
 
         id_email[str(p.id)] = p.email
 
-    save_pickle(id_nom, "id_nom.pickle")
-    save_pickle(id_email, "id_email.pickle")
+    save_pickle(id_nom, "data/id_nom.pickle")
+    save_pickle(id_email, "data/id_email.pickle")
 
     best_groups_4 = best_groups[4][:4]
     for idx, grup in enumerate(best_groups_4, start=1):
