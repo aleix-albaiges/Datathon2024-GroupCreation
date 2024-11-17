@@ -5,18 +5,7 @@ from dataclasses import dataclass
 import os
 from typing import Dict, List, Literal
 import subprocess
-import tqdm
-import numpy as np
-import pickle
 from rich import print
-import heapq
-from pprint import pprint
-from collections import Counter, defaultdict
-from elasticsearch import Elasticsearch
-from elasticsearch.helpers import scan
-from elasticsearch_dsl import Search, Index, analyzer, tokenizer
-from elasticsearch_dsl.query import Q
-import csv
 
 
 
@@ -59,6 +48,9 @@ class Participant:
 
 
 def load_participants(path: str) -> List[Participant]:
+    '''
+    Given path to read the json input, returns a list of class Participant
+    '''
     if not pathlib.Path(path).exists():
         raise FileNotFoundError(
             f"The file {path} does not exist, are you sure you're using the correct path?"
@@ -71,7 +63,10 @@ def load_participants(path: str) -> List[Participant]:
     return [Participant(**participant) for participant in json.load(open(path))]
 
 
-def sims(path_json_participants: str = 'data/datathon_participants.json') -> None:
+def group(path_json_participants: str = 'data/datathon_participants.json') -> None:
+    '''
+    Generate two different documents grouping texts variables. 
+    '''
     
     participants = load_participants(path_json_participants)
     objectives : dict[uuid.UUID,str] = {}
@@ -105,6 +100,9 @@ def sims(path_json_participants: str = 'data/datathon_participants.json') -> Non
 
 
 def index_documents(script_path, index_name, extract_dir):
+    ''''
+    Index the given document
+    '''
     print("Indexing documents...")
     command = [
         'python3', script_path,
@@ -119,6 +117,9 @@ def index_documents(script_path, index_name, extract_dir):
 
 
 def indexing(path_to_file_IndexfilesPreprocess: str) -> None:
+    '''
+    Iterates for all the documents and index them
+    '''
     directories = ['objective_files_dir', 'technical_files_dir']
     index_names = ['objective_ind', 'technical_ind']
 
@@ -129,7 +130,7 @@ def indexing(path_to_file_IndexfilesPreprocess: str) -> None:
 
 
 def main() -> None:
-    sims()
+    group()
     indexing('D:\Github\Datathon2024-GroupCreation\Scripts_def\IndexFilesPreprocess.py')
 
    
