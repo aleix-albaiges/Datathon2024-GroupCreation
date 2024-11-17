@@ -170,6 +170,18 @@ def organizer_view():
                 # Save to session state
                 st.session_state['participant_data'] = df
 
+                # Add download button for data.json
+                if os.path.exists(file_path):
+                    with open(file_path, "r") as f:
+                        json_data = f.read()
+                    
+                    st.download_button(
+                        label="Download Data JSON",
+                        data=json_data,
+                        file_name="data.json",
+                        mime="application/json"
+                    )
+
             except Exception as e:
                 st.error(f"Error processing the uploaded file: {str(e)}")
                 return
@@ -186,36 +198,31 @@ def organizer_view():
                             main1()  # Waits for main1() to finish
                             progress_bar.progress(33)
                             st.success("text_similarities_indexing completed!")
-                            time.sleep(2)  # Wait for 2 seconds before moving to the next script
+                            time.sleep(2)
 
                             # Run Script 2
                             st.info("Running text_processing_final...")
                             main2()  # Waits for main2() to finish
                             progress_bar.progress(66)
                             st.success("text_processing_final completed!")
-                            time.sleep(2)  # Wait for 2 seconds before moving to the next script
+                            time.sleep(2)
 
-                            """# Run Script 3
-                            st.info("Generating final groups (Script 3)...")
-                            output_csv = process_script3(st.session_state['participant_data'])  # Waits for process_script3() to finish
-                            progress_bar.progress(100)
-                            st.success("Final groups generated!")
-                            time.sleep(2)  # Wait for 2 seconds before providing download link"""
+                            # Provide download button for processed data
+                            processed_file_path = "/Users/cristinateixidocruilles/Desktop/Datathon24/Streamlit/data/df_text_processed.csv"
+                            if os.path.exists(processed_file_path):
+                                with open(processed_file_path, "rb") as f:
+                                    processed_data = f.read()
+                                st.download_button(
+                                    label="Download Processed Data",
+                                    data=processed_data,
+                                    file_name="df_text_processed.csv",
+                                    mime="text/csv"
+                                )
+                            else:
+                                st.warning("Processed file not found. Please ensure the processing completed successfully.")
 
-                            # Provide download link for Script 3 output
-                            if st.button("Download Generated File"):
-                                if os.path.exists("/Users/cristinateixidocruilles/Desktop/Datathon24/Streamlit/data/df_text_processed.csv"):
-                                    st.download_button(
-                                        label="Download example_file.csv",
-                                        data=open("/Users/cristinateixidocruilles/Desktop/Datathon24/Streamlit/data/df_text_processed.csv", "rb").read(),
-                                        file_name="example_file.csv",
-                                        mime="text/csv",
-                                    )
-                                else:
-                                    st.warning("No file available to download. Please generate it first.")
                         except Exception as e:
                             st.error(f"Error during group generation: {str(e)}")
-    
 
 def display_results_with_download(results, filename):
     """Display results and provide download options"""
