@@ -22,7 +22,9 @@ By using these diverse attributes, the system can apply different distance funct
 
 # Prerequisites  
 This project is mainly build in Python, you can install it in the following link:
+
 Install [Python](https://www.python.org/downloads/) (3.10 or higher)
+
 Also, also various packages are used in our implementation that can be installed with the following command
 
 ```bash
