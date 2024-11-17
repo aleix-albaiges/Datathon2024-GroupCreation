@@ -162,23 +162,24 @@ def participant_view():
     st.header("Find Your Group")
     name_search = st.text_input("Enter your name")
     if name_search:
-        preference = id_preference[name_search]
-        found = False
-        for group in best_groups_set[preference]:
-            if nom_id[name_search] in group:
-                        found = True                   
-                        # Display group info
-                        st.subheader("Your Group Members")
-                        # Create columns for each member
-                        cols = st.columns(len(group))
-                        for col, teammate in zip(cols, group):
+        try:
+            preference = id_preference[name_search]
+            found = False
+            for group in best_groups_set[preference]:
+                if nom_id[name_search] in group:
+                            found = True                   
+                            # Display group info
+                            st.subheader("Your Group Members")
+                            # Create columns for each member
+                            cols = st.columns(len(group))
+                            for col, teammate in zip(cols, group):
 
-                            with col:
-                                st.markdown(f"### {id_nom[teammate]}")
-                                st.write(f"📧 {id_email[teammate]}")
-                            
-        if not found:
-            st.warning("Name not found. Please check your spelling or contact the organizers.")
+                                with col:
+                                    st.markdown(f"### {id_nom[teammate]}")
+                                    st.write(f"📧 {id_email[teammate]}")
+        except:                   
+            if not found:
+                st.warning("Name not found. Please check your spelling or contact the organizers.")
 
 def main():
     # Initialize session state
