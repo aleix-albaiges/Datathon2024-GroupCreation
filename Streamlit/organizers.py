@@ -116,5 +116,5 @@ def organizer_view():
 
                     except Exception as e:
                         st.error(f"Error during group generation: {str(e)}")
-    st.rerun()
+
 
